@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>발전 퍼포먼스 시뮬레이션</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="bg-glow"></div>
+
+    <main class="app">
+      <section class="hero">
+        <h1>발전 퍼포먼스 시뮬레이션</h1>
+        <p>Arduino Uno 연결 후, 전기가 5V까지 충전되는 과정을 실감나게 보여줍니다.</p>
+      </section>
+
+      <section class="controls">
+        <button id="connectBtn" class="main-btn connect">🔌 아두이노 연결</button>
+        <button id="startBtn" class="main-btn start hidden">▶ 시작하기</button>
+        <button id="resetBtn" class="main-btn reset hidden">↻ 다시 시작</button>
+      </section>
+
+      <section id="statusBar" class="status-bar">
+        <span id="connectionStatus">● 연결 대기</span>
+        <span id="countStatus">시작 대기</span>
+        <span>목표 전압: <b>5.00V</b></span>
+      </section>
+
+      <section id="arduinoStage" class="stage hidden">
+        <div class="arduino-card">
+          <div class="arduino-board">
+            <div class="usb"></div>
+            <div class="chip large"></div>
+            <div class="chip small"></div>
+            <div class="pins top"></div>
+            <div class="pins bottom"></div>
+            <div class="led led1"></div>
+            <div class="led led2"></div>
+            <p>Arduino UNO</p>
+          </div>
+          <div id="electricEffect" class="electric-effect hidden">⚡</div>
+        </div>
+
+        <div class="meter-area">
+          <h2 id="mainMessage">아두이노가 준비되었습니다.</h2>
+
+          <div class="voltage-display">
+            <span id="voltageValue">0.00</span><span>V</span>
+          </div>
+
+          <div class="gauge">
+            <div id="gaugeFill" class="gauge-fill"></div>
+          </div>
+
+          <div class="mini-values">
+            <div>
+              <p>현재 전류</p>
+              <strong id="currentValue">0.0 mA</strong>
+            </div>
+            <div>
+              <p>현재 전력</p>
+              <strong id="powerValue">0.0 mW</strong>
+            </div>
+            <div>
+              <p>진행률</p>
+              <strong id="percentValue">0%</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="chart-card">
+        <h2>시간에 따른 전압 변화</h2>
+        <div class="chart">
+          <canvas id="voltageCanvas" width="900" height="260"></canvas>
+        </div>
+      </section>
+
+      <section id="finishBox" class="finish-box hidden">
+        <h2>발전 완료!</h2>
+        <p>전압이 5.00V까지 도달했습니다.</p>
+      </section>
+    </main>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
