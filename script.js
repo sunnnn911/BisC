@@ -115,13 +115,9 @@ startBtn.addEventListener("click", async () => {
   startBtn.disabled = true;
   connectBtn.disabled = true;
 
-  mainMessage.textContent = "5초 뒤 발전이 시작됩니다.";
+  mainMessage.textContent = "발전이 시작됩니다.";
   countStatus.textContent = "카운트다운 중";
 
-  for (let i = 5; i >= 1; i--) {
-    mainMessage.textContent = `${i}초 뒤 발전 시작`;
-    await wait(1000);
-  }
 
   mainMessage.textContent = "발전 중... 전기가 모이고 있습니다!";
   countStatus.textContent = "발전 진행 중";
