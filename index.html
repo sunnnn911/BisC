@@ -3,16 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>발전 시뮬레이션</title>
+    <title>발전 실시간 모니터링</title>
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
-    <div class="bg-glow"></div>
-
     <main class="app">
       <section class="hero">
-        <h1>발전 시뮬레이션</h1>
-        <p>Arduino Uno 연결 전기가 충전되는 과정을 보여줍니다.</p>
+        <h1>발전 실시간 모니터링</h1>
       </section>
 
       <section class="controls">
@@ -21,10 +18,10 @@
         <button id="resetBtn" class="main-btn reset hidden">↻ 다시 시작</button>
       </section>
 
-      <section id="statusBar" class="status-bar">
+      <section class="status-bar">
         <span id="connectionStatus">● 연결 대기</span>
         <span id="countStatus">시작 대기</span>
-        <span> 전압: <b>5.00V</b></span>
+        <span>목표 전압: <b>5.00V</b></span>
       </section>
 
       <section id="arduinoStage" class="stage hidden">
@@ -39,7 +36,6 @@
             <div class="led led2"></div>
             <p>Arduino UNO</p>
           </div>
-          <div id="electricEffect" class="electric-effect hidden">⚡</div>
         </div>
 
         <div class="meter-area">
