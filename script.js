@@ -12,7 +12,6 @@ const currentValue = document.getElementById("currentValue");
 const powerValue = document.getElementById("powerValue");
 const percentValue = document.getElementById("percentValue");
 const gaugeFill = document.getElementById("gaugeFill");
-const electricEffect = document.getElementById("electricEffect");
 const finishBox = document.getElementById("finishBox");
 
 const canvas = document.getElementById("voltageCanvas");
@@ -39,20 +38,15 @@ function drawChart() {
     ctx.fillText(`${i}V`, 16, y + 4);
   }
 
-  ctx.fillStyle = "rgba(255,255,255,0.35)";
-  ctx.fillText("전압(V)", 55, 28);
-
   if (data.length < 2) return;
 
   ctx.strokeStyle = "#ffd166";
   ctx.lineWidth = 4;
-  ctx.shadowColor = "#ffd166";
-  ctx.shadowBlur = 16;
 
   ctx.beginPath();
 
   data.forEach((point, index) => {
-    const x = 50 + (index / 100) * 800;
+    const x = 50 + (index / 160) * 800;
     const y = 220 - (point / 5) * 190;
 
     if (index === 0) ctx.moveTo(x, y);
@@ -60,7 +54,6 @@ function drawChart() {
   });
 
   ctx.stroke();
-  ctx.shadowBlur = 0;
 }
 
 function updateDisplay(voltage) {
@@ -87,10 +80,7 @@ function resetSimulation() {
 
   countStatus.textContent = "시작 대기";
   mainMessage.textContent = "아두이노가 준비되었습니다.";
-
-  electricEffect.classList.add("hidden");
   finishBox.classList.add("hidden");
-  arduinoStage.classList.remove("shake");
 
   drawChart();
 }
@@ -103,7 +93,6 @@ connectBtn.addEventListener("click", () => {
   connectionStatus.textContent = "● Arduino Uno 연결 완료";
   connectionStatus.style.color = "#63e6be";
   countStatus.textContent = "시작 가능";
-
   mainMessage.textContent = "Arduino Uno가 연결되었습니다.";
 });
 
@@ -115,35 +104,30 @@ startBtn.addEventListener("click", async () => {
   startBtn.disabled = true;
   connectBtn.disabled = true;
 
-  mainMessage.textContent = "발전이 시작됩니다.";
-  countStatus.textContent = "카운트다운 중";
+  mainMessage.textContent = "발전 준비 중";
+  countStatus.textContent = "준비 중";
 
+  await wait(5000);
 
-  mainMessage.textContent = "발전 중... 전기가 모이고 있습니다!";
+  mainMessage.textContent = "발전 중";
   countStatus.textContent = "발전 진행 중";
-  electricEffect.classList.remove("hidden");
-  arduinoStage.classList.add("shake");
 
-  const duration = 7000;
+  const duration = 18000;
   const startTime = performance.now();
 
   function animate(now) {
     const elapsed = now - startTime;
     const progress = Math.min(elapsed / duration, 1);
 
-    const realisticProgress =
-      progress < 0.7
-        ? progress * progress * 1.25
-        : 1 - Math.pow(1 - progress, 3);
+    const smoothProgress = progress * progress * (3 - 2 * progress);
+    let voltage = smoothProgress * 5;
 
-    let voltage = Math.min(realisticProgress * 5, 5);
-
-    const noise = progress < 1 ? Math.sin(now / 90) * 0.04 : 0;
+    const noise = progress < 1 ? Math.sin(now / 220) * 0.01 : 0;
     voltage = Math.max(0, Math.min(5, voltage + noise));
 
     updateDisplay(voltage);
 
-    if (data.length <= 100) {
+    if (data.length <= 160) {
       data.push(voltage);
     } else {
       data.shift();
@@ -159,12 +143,10 @@ startBtn.addEventListener("click", async () => {
       data.push(5);
       drawChart();
 
-      electricEffect.classList.add("hidden");
-      arduinoStage.classList.remove("shake");
       finishBox.classList.remove("hidden");
-
       mainMessage.textContent = "5.00V 충전 완료!";
       countStatus.textContent = "완료";
+
       running = false;
       startBtn.disabled = false;
       connectBtn.disabled = false;
