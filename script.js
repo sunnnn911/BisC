@@ -17,6 +17,8 @@ const finishBox = document.getElementById("finishBox");
 const canvas = document.getElementById("voltageCanvas");
 const ctx = canvas.getContext("2d");
 
+const ledElements = document.querySelectorAll(".led");
+
 const MAX_VOLTAGE = 2; // 목표 전압
 const RISE_DURATION = 30000; // 0V -> 2V까지 걸리는 시간 (천천히 상승)
 
@@ -86,6 +88,7 @@ function resetSimulation() {
   countStatus.textContent = "시작 대기";
   mainMessage.textContent = "아두이노가 준비되었습니다.";
   finishBox.classList.add("hidden");
+  ledElements.forEach((led) => led.classList.remove("warning"));
 
   drawChart();
 }
@@ -112,7 +115,7 @@ startBtn.addEventListener("click", async () => {
   mainMessage.textContent = "발전 준비 중";
   countStatus.textContent = "준비 중";
 
-  await wait(5000);
+  await prepareCountdown(5000, 3000);
 
   mainMessage.textContent = "발전 중";
   countStatus.textContent = "발전 진행 중";
@@ -164,6 +167,31 @@ resetBtn.addEventListener("click", resetSimulation);
 
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function prepareCountdown(totalMs, warnRemainingMs) {
+  return new Promise((resolve) => {
+    const start = performance.now();
+    const switchAt = totalMs - warnRemainingMs;
+    let switched = false;
+
+    function tick(now) {
+      const elapsed = now - start;
+
+      if (!switched && elapsed >= switchAt) {
+        ledElements.forEach((led) => led.classList.add("warning"));
+        switched = true;
+      }
+
+      if (elapsed >= totalMs) {
+        resolve();
+      } else {
+        requestAnimationFrame(tick);
+      }
+    }
+
+    requestAnimationFrame(tick);
+  });
 }
 
 drawChart();
