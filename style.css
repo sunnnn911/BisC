@@ -168,6 +168,12 @@ body {
   border-radius: 50%;
   background: #ffd166;
   box-shadow: 0 0 15px #ffd166;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.led.warning {
+  background: #ff4d4d;
+  box-shadow: 0 0 18px #ff4d4d;
 }
 
 .led1 {
