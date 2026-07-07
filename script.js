@@ -17,6 +17,9 @@ const finishBox = document.getElementById("finishBox");
 const canvas = document.getElementById("voltageCanvas");
 const ctx = canvas.getContext("2d");
 
+const MAX_VOLTAGE = 2; // 목표 전압
+const RISE_DURATION = 30000; // 0V -> 2V까지 걸리는 시간 (천천히 상승)
+
 let data = [];
 let running = false;
 
@@ -28,6 +31,8 @@ function drawChart() {
 
   for (let i = 0; i <= 5; i++) {
     const y = 220 - i * 38;
+    const label = (i / 5) * MAX_VOLTAGE;
+
     ctx.beginPath();
     ctx.moveTo(50, y);
     ctx.lineTo(850, y);
@@ -35,7 +40,7 @@ function drawChart() {
 
     ctx.fillStyle = "rgba(255,255,255,0.45)";
     ctx.font = "13px Arial";
-    ctx.fillText(`${i}V`, 16, y + 4);
+    ctx.fillText(`${label.toFixed(1)}V`, 16, y + 4);
   }
 
   if (data.length < 2) return;
@@ -47,7 +52,7 @@ function drawChart() {
 
   data.forEach((point, index) => {
     const x = 50 + (index / 160) * 800;
-    const y = 220 - (point / 5) * 190;
+    const y = 220 - (point / MAX_VOLTAGE) * 190;
 
     if (index === 0) ctx.moveTo(x, y);
     else ctx.lineTo(x, y);
@@ -59,7 +64,7 @@ function drawChart() {
 function updateDisplay(voltage) {
   const current = voltage * 42;
   const power = voltage * current;
-  const percent = Math.min((voltage / 5) * 100, 100);
+  const percent = Math.min((voltage / MAX_VOLTAGE) * 100, 100);
 
   voltageValue.textContent = voltage.toFixed(2);
   currentValue.textContent = `${current.toFixed(1)} mA`;
@@ -112,18 +117,17 @@ startBtn.addEventListener("click", async () => {
   mainMessage.textContent = "발전 중";
   countStatus.textContent = "발전 진행 중";
 
-  const duration = 18000;
   const startTime = performance.now();
 
   function animate(now) {
     const elapsed = now - startTime;
-    const progress = Math.min(elapsed / duration, 1);
+    const progress = Math.min(elapsed / RISE_DURATION, 1);
 
     const smoothProgress = progress * progress * (3 - 2 * progress);
-    let voltage = smoothProgress * 5;
+    let voltage = smoothProgress * MAX_VOLTAGE;
 
-    const noise = progress < 1 ? Math.sin(now / 220) * 0.01 : 0;
-    voltage = Math.max(0, Math.min(5, voltage + noise));
+    const noise = progress < 1 ? Math.sin(now / 220) * 0.004 : 0;
+    voltage = Math.max(0, Math.min(MAX_VOLTAGE, voltage + noise));
 
     updateDisplay(voltage);
 
@@ -139,12 +143,12 @@ startBtn.addEventListener("click", async () => {
     if (progress < 1) {
       requestAnimationFrame(animate);
     } else {
-      updateDisplay(5);
-      data.push(5);
+      updateDisplay(MAX_VOLTAGE);
+      data.push(MAX_VOLTAGE);
       drawChart();
 
       finishBox.classList.remove("hidden");
-      mainMessage.textContent = "5.00V 충전 완료!";
+      mainMessage.textContent = `${MAX_VOLTAGE.toFixed(2)}V 충전 완료!`;
       countStatus.textContent = "완료";
 
       running = false;
